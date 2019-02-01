@@ -96,11 +96,10 @@ export class TaskList extends React.Component {
     };
     return (
       <div>
-        <h1>task list</h1>
+        <h1>task list (click)</h1>
+        <div>project row</div>
 
         <TaskRow item={task} />
-
-        <div>more tasks</div>
       </div>
     );
   }
