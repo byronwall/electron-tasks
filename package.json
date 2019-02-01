@@ -1,0 +1,40 @@
+{
+  "name": "electron-tasks3",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@blueprintjs/core": "^3.12.0",
+    "@types/jest": "23.3.13",
+    "@types/node": "10.12.19",
+    "@types/react": "16.7.22",
+    "@types/react-bootstrap": "^0.32.16",
+    "@types/react-dom": "16.0.11",
+    "concurrently": "^4.1.0",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "typescript": "3.3.1"
+  },
+  "devDependencies": {
+    "electron": "^4.0.3",
+    "react-scripts": "2.1.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "electron": "electron .",
+    "dev": "concurrently \"yarn start\" \"node electron-wait-react.js\""
+  },
+  "homepage": "./",
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "main": "electron.js",
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}
