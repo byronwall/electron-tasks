@@ -12,14 +12,17 @@ import {
   Position
 } from "@blueprintjs/core";
 import * as React from "react";
+import { DataContextProvider, DataContext } from "./DataContextProvider";
 
 export default class App extends React.Component {
   render() {
     return (
       <div>
-        <Nav />
-        <TaskList />
-        <KeyboardModal />
+        <DataContextProvider>
+          <Nav />
+          <TaskList />
+          <KeyboardModal />
+        </DataContextProvider>
       </div>
     );
   }
@@ -83,23 +86,21 @@ export class NavSearchArea extends React.Component {
   }
 }
 
-interface Task {
+export interface Task {
   title: string;
   children?: Task[];
 }
 
 export class TaskList extends React.Component {
   render() {
-    const task: Task = {
-      title: "Project",
-      children: [{ title: "Do one" }, { title: "Do another" }]
-    };
     return (
       <div>
         <h1>task list (click)</h1>
         <div>project row</div>
 
-        <TaskRow item={task} />
+        <DataContext.Consumer>
+          {task => <TaskRow item={task.root} />}
+        </DataContext.Consumer>
       </div>
     );
   }
@@ -112,13 +113,21 @@ export class TaskRow extends React.Component<TaskRowProps> {
   render() {
     return (
       <div>
-        <ButtonGroup>
-          <Button small icon="tick" />
-          <Button small intent="danger" icon="trash" />
-          <Button small icon="comment" />
-          <Button small icon="remove-column-right" />
-          <Button small icon="move" />
-        </ButtonGroup>
+        <DataContext.Consumer>
+          {value => (
+            <ButtonGroup>
+              <Button
+                small
+                icon="tick"
+                onClick={() => value.addTask("test" + Math.random())}
+              />
+              <Button small intent="danger" icon="trash" />
+              <Button small icon="comment" />
+              <Button small icon="remove-column-right" />
+              <Button small icon="move" />
+            </ButtonGroup>
+          )}
+        </DataContext.Consumer>
         <span>{this.props.item.title}</span>
 
         {this.props.item.children !== undefined &&

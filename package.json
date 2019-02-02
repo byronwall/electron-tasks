@@ -5,11 +5,13 @@
   "dependencies": {
     "@blueprintjs/core": "^3.12.0",
     "@types/jest": "23.3.13",
+    "@types/lodash": "^4.14.120",
     "@types/node": "10.12.19",
     "@types/react": "16.7.22",
     "@types/react-bootstrap": "^0.32.16",
     "@types/react-dom": "16.0.11",
     "concurrently": "^4.1.0",
+    "lodash": "^4.17.11",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "typescript": "3.3.1"
