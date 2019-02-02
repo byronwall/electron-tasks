@@ -2,6 +2,7 @@ import React from "react";
 
 import { DataContext } from "./DataContextProvider";
 import { TaskRow } from "./TaskRow";
+import { Button } from "@blueprintjs/core";
 
 export class TaskList extends React.Component {
   render() {
@@ -11,7 +12,12 @@ export class TaskList extends React.Component {
         <div>project row</div>
 
         <DataContext.Consumer>
-          {task => <TaskRow item={task.root} />}
+          {task => (
+            <React.Fragment>
+              <Button text="add new" onClick={() => task.addTask("test")} />
+              <TaskRow item={task.root} />
+            </React.Fragment>
+          )}
         </DataContext.Consumer>
       </div>
     );

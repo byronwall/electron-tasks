@@ -18,7 +18,7 @@ export class TaskRow extends React.Component<TaskRowProps> {
               <Button
                 small
                 icon="tick"
-                onClick={() => value.addTask("test" + Math.random())}
+                onClick={() => value.completeTask(this.props.item.id)}
               />
               <Button
                 small
@@ -33,11 +33,13 @@ export class TaskRow extends React.Component<TaskRowProps> {
           )}
         </DataContext.Consumer>
         <span>{this.props.item.title}</span>
-        <span>|</span>
+        <span>{" | "}</span>
         <span>{this.props.item.id}</span>
 
         {this.props.item.children !== undefined &&
-          this.props.item.children.map(child => <TaskRow item={child} />)}
+          this.props.item.children
+            .filter(c => !c.isComplete)
+            .map(child => <TaskRow item={child} />)}
       </div>
     );
   }

@@ -1,6 +1,7 @@
-import React from "react";
-import { Task } from "./model";
 import _ from "lodash";
+import React from "react";
+
+import { Task } from "./model";
 
 interface AppDataState {
   root: Task;
@@ -9,16 +10,21 @@ interface AppDataState {
 interface AppDataActions {
   addTask(task: string): void;
   removeTaskId(id: number): void;
+
+  completeTask(id: number): void;
+
+  // TODO: finish out operations: complete, move to proj, update information, etc.
 }
 
+const dummy = () => {
+  return;
+};
+
 export const DataContext = React.createContext<AppDataState & AppDataActions>({
-  addTask: () => {
-    return;
-  },
-  removeTaskId: () => {
-    return;
-  },
-  root: { title: "Dummy", id: 0 }
+  addTask: dummy,
+  removeTaskId: dummy,
+  completeTask: dummy,
+  root: { title: "Dummy", id: 0, isComplete: false }
 });
 
 export class DataContextProvider extends React.Component<{}, AppDataState> {
@@ -34,15 +40,18 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
         children: [
           {
             title: "Test child",
-            id: DataContextProvider._id++
+            id: DataContextProvider._id++,
+            isComplete: false
           }
         ],
-        id: DataContextProvider._id++
+        id: DataContextProvider._id++,
+        isComplete: false
       }
     };
 
     this.addTask = this.addTask.bind(this);
     this.removeTask = this.removeTask.bind(this);
+    this.completeTask = this.completeTask.bind(this);
   }
 
   addTask(title: string) {
@@ -52,7 +61,11 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
       tasks.children = [];
     }
 
-    tasks.children.push({ title, id: DataContextProvider._id++ });
+    tasks.children.push({
+      title,
+      id: DataContextProvider._id++,
+      isComplete: false
+    });
 
     this.setState({ root: tasks });
   }
@@ -91,13 +104,69 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
     }
   }
 
+  completeTask(id: number) {
+    const tasks = _.cloneDeep(this.state.root);
+
+    const taskToEdit = this.findChildOrRoot(tasks, c => c.id === id);
+
+    if (taskToEdit === undefined) {
+      return;
+    }
+    taskToEdit.isComplete = true;
+
+    this.setState({ root: tasks });
+  }
+
+  extractChildrenPlusRoot(task: Task) {
+    // return all children from root
+    const children = [task];
+    const toSearch = [task];
+
+    while (toSearch.length > 0) {
+      const curTask = toSearch.pop()!;
+
+      const childrenToSearch = curTask.children || [];
+
+      for (const child of childrenToSearch) {
+        children.push(child);
+        toSearch.push(child);
+      }
+    }
+
+    return children;
+  }
+
+  findChildOrRoot(task: Task, filter: (item: Task) => boolean) {
+    // search through root or its children to find an item that meets filter
+    const children = [task];
+    const toSearch = [task];
+
+    while (toSearch.length > 0) {
+      const curTask = toSearch.pop()!;
+
+      if (filter(curTask)) {
+        return curTask;
+      }
+
+      const childrenToSearch = curTask.children || [];
+
+      for (const child of childrenToSearch) {
+        children.push(child);
+        toSearch.push(child);
+      }
+    }
+
+    return undefined;
+  }
+
   render() {
     return (
       <DataContext.Provider
         value={{
           root: this.state.root,
           addTask: this.addTask,
-          removeTaskId: this.removeTask
+          removeTaskId: this.removeTask,
+          completeTask: this.completeTask
         }}
       >
         {this.props.children}
