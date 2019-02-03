@@ -10,8 +10,9 @@ interface AppDataState {
 interface AppDataActions {
   addTask(task: string): void;
   removeTaskId(id: number): void;
-
   completeTask(id: number): void;
+
+  changeTaskProps(id: number, newProps: Partial<Task>): void;
 
   // TODO: finish out operations: complete, move to proj, update information, etc.
 }
@@ -24,6 +25,7 @@ export const DataContext = React.createContext<AppDataState & AppDataActions>({
   addTask: dummy,
   removeTaskId: dummy,
   completeTask: dummy,
+  changeTaskProps: dummy,
   root: { title: "Dummy", id: 0, isComplete: false }
 });
 
@@ -52,6 +54,7 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
     this.addTask = this.addTask.bind(this);
     this.removeTask = this.removeTask.bind(this);
     this.completeTask = this.completeTask.bind(this);
+    this.editTask = this.editTask.bind(this);
   }
 
   addTask(title: string) {
@@ -117,6 +120,20 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
     this.setState({ root: tasks });
   }
 
+  editTask(id: number, newProps: Partial<Task>) {
+    const tasks = _.cloneDeep(this.state.root);
+
+    const taskToEdit = this.findChildOrRoot(tasks, c => c.id === id);
+
+    if (taskToEdit === undefined) {
+      return;
+    }
+
+    Object.assign(taskToEdit, newProps);
+
+    this.setState({ root: tasks });
+  }
+
   extractChildrenPlusRoot(task: Task) {
     // return all children from root
     const children = [task];
@@ -166,7 +183,8 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
           root: this.state.root,
           addTask: this.addTask,
           removeTaskId: this.removeTask,
-          completeTask: this.completeTask
+          completeTask: this.completeTask,
+          changeTaskProps: this.editTask
         }}
       >
         {this.props.children}
