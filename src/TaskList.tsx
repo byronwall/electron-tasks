@@ -1,10 +1,8 @@
 import React from "react";
+import { GlobalHotKeys } from "react-hotkeys";
 
 import { DataContext } from "./DataContextProvider";
 import { TaskRow } from "./TaskRow";
-import { Button } from "@blueprintjs/core";
-
-import { GlobalHotKeys } from "react-hotkeys";
 
 export class TaskList extends React.Component {
   render() {
@@ -14,16 +12,14 @@ export class TaskList extends React.Component {
         <div>project row</div>
 
         <DataContext.Consumer>
-          {task => (
+          {ctx => (
             <React.Fragment>
-              <Button text="add new" onClick={() => task.addTask("test")} />
-              <TaskRow item={task.root} />
+              <TaskRow item={ctx.root} />
               <GlobalHotKeys
                 keyMap={{ ADD_TASK: "a" }}
                 handlers={{
                   ADD_TASK: () => {
-                    console.log("shift ?");
-                    task.addTask("from global");
+                    ctx.addTask("from global");
                   }
                 }}
               />
