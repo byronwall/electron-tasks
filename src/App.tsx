@@ -1,19 +1,39 @@
 import * as React from "react";
+import { GlobalHotKeys } from "react-hotkeys";
 
-import { DataContextProvider } from "./DataContextProvider";
+import { DataContext, DataContextProvider } from "./DataContextProvider";
 import { Nav } from "./Nav";
 import { TaskList } from "./TaskList";
 
 export default class App extends React.Component {
   render() {
     return (
-      <div>
-        <DataContextProvider>
-          <Nav />
-          <TaskList />
-          <KeyboardModal />
-        </DataContextProvider>
-      </div>
+      <DataContextProvider>
+        <DataContext.Consumer>
+          {ctx => (
+            <>
+              <div>
+                <Nav />
+                <TaskList />
+                <KeyboardModal />
+              </div>
+
+              <GlobalHotKeys
+                keyMap={{ ADD_TASK: "a" }}
+                handlers={{
+                  ADD_TASK: evt => {
+                    if (evt !== undefined) {
+                      evt.preventDefault();
+                      evt.stopPropagation();
+                    }
+                    ctx.addTask("from global");
+                  }
+                }}
+              />
+            </>
+          )}
+        </DataContext.Consumer>
+      </DataContextProvider>
     );
   }
 }

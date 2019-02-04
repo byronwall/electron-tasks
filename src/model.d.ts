@@ -4,4 +4,6 @@ export interface Task {
   children?: Task[];
 
   isComplete: boolean;
+
+  isNewTask: boolean;
 }

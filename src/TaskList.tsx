@@ -1,5 +1,5 @@
 import React from "react";
-import { GlobalHotKeys } from "react-hotkeys";
+import { HotKeys } from "react-hotkeys";
 
 import { DataContext } from "./DataContextProvider";
 import { TaskRow } from "./TaskRow";
@@ -14,15 +14,7 @@ export class TaskList extends React.Component {
         <DataContext.Consumer>
           {ctx => (
             <React.Fragment>
-              <TaskRow item={ctx.root} />
-              <GlobalHotKeys
-                keyMap={{ ADD_TASK: "a" }}
-                handlers={{
-                  ADD_TASK: () => {
-                    ctx.addTask("from global");
-                  }
-                }}
-              />
+              <TaskRow item={ctx.root} depth={0} />
             </React.Fragment>
           )}
         </DataContext.Consumer>

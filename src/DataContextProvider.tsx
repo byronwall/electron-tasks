@@ -14,6 +14,8 @@ interface AppDataActions {
 
   changeTaskProps(id: number, newProps: Partial<Task>): void;
 
+  saveTaskAndCreateNew(id: number, newProps: Partial<Task>): void;
+
   // TODO: finish out operations: complete, move to proj, update information, etc.
 }
 
@@ -21,12 +23,17 @@ const dummy = () => {
   return;
 };
 
-export const DataContext = React.createContext<AppDataState & AppDataActions>({
+export type DataContext = AppDataState & AppDataActions;
+
+export const DataContext = React.createContext<DataContext>({
   addTask: dummy,
   removeTaskId: dummy,
   completeTask: dummy,
   changeTaskProps: dummy,
-  root: { title: "Dummy", id: 0, isComplete: false }
+  saveTaskAndCreateNew: dummy,
+  // TODO: add indent left and indent right
+  // TODO: add ability to move task up and down
+  root: { title: "Dummy", id: 0, isComplete: false, isNewTask: false }
 });
 
 export class DataContextProvider extends React.Component<{}, AppDataState> {
@@ -43,11 +50,13 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
           {
             title: "Test child",
             id: DataContextProvider._id++,
-            isComplete: false
+            isComplete: false,
+            isNewTask: false
           }
         ],
         id: DataContextProvider._id++,
-        isComplete: false
+        isComplete: false,
+        isNewTask: false
       }
     };
 
@@ -55,22 +64,29 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
     this.removeTask = this.removeTask.bind(this);
     this.completeTask = this.completeTask.bind(this);
     this.editTask = this.editTask.bind(this);
+    this.saveTaskAndCreateNew = this.saveTaskAndCreateNew.bind(this);
   }
 
   addTask(title: string) {
+    // TODO: this needs to consider the sort order to put in the right spot
     const tasks = _.cloneDeep(this.state.root);
 
     if (tasks.children === undefined) {
       tasks.children = [];
     }
 
-    tasks.children.push({
-      title,
-      id: DataContextProvider._id++,
-      isComplete: false
-    });
+    tasks.children.push(this.createNewTask(title));
 
     this.setState({ root: tasks });
+  }
+
+  private createNewTask(title: string): Task {
+    return {
+      title,
+      id: DataContextProvider._id++,
+      isComplete: false,
+      isNewTask: true
+    };
   }
 
   removeTask(id: number) {
@@ -134,6 +150,30 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
     this.setState({ root: tasks });
   }
 
+  saveTaskAndCreateNew(id: number, newProps: Partial<Task>) {
+    // do the edit / save
+    const tasks = _.cloneDeep(this.state.root);
+
+    const taskToEdit = this.findChildOrRoot(tasks, c => c.id === id);
+
+    if (taskToEdit === undefined) {
+      return;
+    }
+
+    Object.assign(taskToEdit, newProps);
+
+    // find the parent of that task, add a new task
+    const parent = this.findParentOfFilter(tasks, c => c.id === id);
+
+    console.log("found parent", parent);
+
+    if (parent !== undefined) {
+      parent.children!.push(this.createNewTask("child?"));
+    }
+
+    this.setState({ root: tasks });
+  }
+
   extractChildrenPlusRoot(task: Task) {
     // return all children from root
     const children = [task];
@@ -151,6 +191,32 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
     }
 
     return children;
+  }
+
+  findParentOfFilter(task: Task, filter: (item: Task) => boolean) {
+    // search through root or its children to find an item that meets filter
+
+    const toSearch = [task];
+
+    while (toSearch.length > 0) {
+      const curTask = toSearch.pop()!;
+
+      if (curTask.children === undefined) {
+        continue;
+      }
+
+      if (curTask.children.some(filter)) {
+        return curTask;
+      }
+
+      const childrenToSearch = curTask.children || [];
+
+      for (const child of childrenToSearch) {
+        toSearch.push(child);
+      }
+    }
+
+    return undefined;
   }
 
   findChildOrRoot(task: Task, filter: (item: Task) => boolean) {
@@ -184,7 +250,8 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
           addTask: this.addTask,
           removeTaskId: this.removeTask,
           completeTask: this.completeTask,
-          changeTaskProps: this.editTask
+          changeTaskProps: this.editTask,
+          saveTaskAndCreateNew: this.saveTaskAndCreateNew
         }}
       >
         {this.props.children}
