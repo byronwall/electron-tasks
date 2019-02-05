@@ -16,6 +16,9 @@ interface AppDataActions {
 
   saveTaskAndCreateNew(id: number, newProps: Partial<Task>): void;
 
+  indentTaskRight(id: number): void;
+  indentTaskLeft(id: number): void;
+
   // TODO: finish out operations: complete, move to proj, update information, etc.
 }
 
@@ -31,6 +34,8 @@ export const DataContext = React.createContext<DataContext>({
   completeTask: dummy,
   changeTaskProps: dummy,
   saveTaskAndCreateNew: dummy,
+  indentTaskLeft: dummy,
+  indentTaskRight: dummy,
   // TODO: add indent left and indent right
   // TODO: add ability to move task up and down
   root: { title: "Dummy", id: 0, isComplete: false, isNewTask: false }
@@ -65,6 +70,8 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
     this.completeTask = this.completeTask.bind(this);
     this.editTask = this.editTask.bind(this);
     this.saveTaskAndCreateNew = this.saveTaskAndCreateNew.bind(this);
+    this.indentTaskRight = this.indentTaskRight.bind(this);
+    this.indentTaskLeft = this.indentTaskLeft.bind(this);
   }
 
   addTask(title: string) {
@@ -242,6 +249,71 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
     return undefined;
   }
 
+  indentTaskRight(id: number) {
+    // find the task, find the task right above it, make this taks a child of that one
+    const tasks = _.cloneDeep(this.state.root);
+
+    const itsParent = this.findParentOfFilter(tasks, c => c.id === id);
+
+    // find index of current in parent
+
+    if (itsParent === undefined) {
+      return;
+    }
+
+    const childIndex = itsParent.children!.findIndex(c => c.id === id);
+
+    if (childIndex > 0) {
+      // can't be first... must be found
+      const newParent = itsParent.children![childIndex - 1];
+      if (newParent.children === undefined) {
+        newParent.children = [];
+      }
+
+      newParent.children.push(itsParent.children![childIndex]);
+
+      itsParent.children!.splice(childIndex, 1);
+      this.setState({ root: tasks });
+    }
+  }
+
+  indentTaskLeft(id: number) {
+    // find the task, find the task right above it, make this taks a child of that one
+    const tasks = _.cloneDeep(this.state.root);
+
+    const itsParent = this.findParentOfFilter(tasks, c => c.id === id);
+
+    if (itsParent === undefined) {
+      return;
+    }
+
+    const itsGrandParent = this.findParentOfFilter(
+      tasks,
+      c => c.id === itsParent.id
+    );
+
+    if (itsGrandParent === undefined) {
+      return;
+    }
+
+    const parentIndex = itsGrandParent.children!.findIndex(
+      c => c.id === itsParent.id
+    );
+
+    const childIndex = itsParent.children!.findIndex(c => c.id === id);
+
+    // insert child up one level
+    itsGrandParent.children!.splice(
+      parentIndex + 1,
+      0,
+      itsParent.children![childIndex]
+    );
+
+    itsParent.children!.splice(childIndex, 1);
+
+    this.setState({ root: tasks });
+  }
+
   render() {
     return (
       <DataContext.Provider
@@ -251,7 +323,9 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
           removeTaskId: this.removeTask,
           completeTask: this.completeTask,
           changeTaskProps: this.editTask,
-          saveTaskAndCreateNew: this.saveTaskAndCreateNew
+          saveTaskAndCreateNew: this.saveTaskAndCreateNew,
+          indentTaskRight: this.indentTaskRight,
+          indentTaskLeft: this.indentTaskLeft
         }}
       >
         {this.props.children}

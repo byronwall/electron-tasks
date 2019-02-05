@@ -70,6 +70,8 @@ export class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
                       isNewTask: false
                     })
                   }
+                  indentRight={() => ctx.indentTaskRight(this.props.item.id)}
+                  indentLeft={() => ctx.indentTaskLeft(this.props.item.id)}
                 />
               </span>
             </React.Fragment>

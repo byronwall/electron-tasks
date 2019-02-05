@@ -1,5 +1,4 @@
 import React from "react";
-import { InputGroup } from "@blueprintjs/core";
 
 interface EditOrDisplayProps {
   value: string;
@@ -8,6 +7,8 @@ interface EditOrDisplayProps {
   didUpdate(newText: string): void;
   saveWithEnter(newText: string): void;
   cancelUpdate(): void;
+  indentRight(): void;
+  indentLeft(): void;
 }
 interface EditOrDisplayState {
   isEditing: boolean;
@@ -34,8 +35,6 @@ export class EditOrDisplay extends React.Component<
   testKeyDown(keyDownEvent: React.KeyboardEvent<any>): void {
     // accept edit
 
-    console.log(keyDownEvent, keyDownEvent.key, keyDownEvent.altKey);
-
     if (keyDownEvent.key === "Enter") {
       this.acceptEdit(true);
       return;
@@ -47,6 +46,16 @@ export class EditOrDisplay extends React.Component<
         this.props.cancelUpdate();
       });
       return;
+    }
+
+    if (keyDownEvent.key === "ArrowRight" && keyDownEvent.altKey) {
+      console.log("alt right indent");
+      this.props.indentRight();
+    }
+
+    if (keyDownEvent.key === "ArrowLeft" && keyDownEvent.altKey) {
+      console.log("alt left indent");
+      this.props.indentLeft();
     }
   }
 
