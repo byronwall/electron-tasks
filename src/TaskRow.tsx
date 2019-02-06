@@ -55,15 +55,15 @@ export class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
                   >
                     <EditOrDisplay
                       value={this.props.item.title}
-                      didUpdate={newValu =>
+                      didUpdate={newValue =>
                         ctx.changeTaskProps(this.props.item.id, {
-                          title: newValu,
+                          title: newValue,
                           isNewTask: false
                         })
                       }
-                      saveWithEnter={newValu =>
+                      saveWithEnter={newValue =>
                         ctx.saveTaskAndCreateNew(this.props.item.id, {
-                          title: newValu,
+                          title: newValue,
                           isNewTask: false
                         })
                       }
