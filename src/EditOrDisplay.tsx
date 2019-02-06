@@ -100,9 +100,7 @@ export class EditOrDisplay extends React.Component<
   }
 
   renderDisplay() {
-    return (
-      <span onClick={() => this.activateEditor()}>{this.props.value}</span>
-    );
+    return <div onClick={() => this.activateEditor()}>{this.props.value}</div>;
   }
 
   render() {

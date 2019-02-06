@@ -48,7 +48,7 @@ export class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
                   </ButtonGroup>
                 </td>
                 <td>
-                  <span
+                  <div
                     style={{
                       paddingLeft: 10 * this.props.depth
                     }}
@@ -78,7 +78,7 @@ export class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
                       }
                       indentLeft={() => ctx.indentTaskLeft(this.props.item.id)}
                     />
-                  </span>
+                  </div>
                 </td>
               </React.Fragment>
             )}
