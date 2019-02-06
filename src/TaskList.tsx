@@ -1,5 +1,5 @@
+import { HTMLTable } from "@blueprintjs/core";
 import React from "react";
-import { HotKeys } from "react-hotkeys";
 
 import { DataContext } from "./DataContextProvider";
 import { TaskRow } from "./TaskRow";
@@ -14,7 +14,16 @@ export class TaskList extends React.Component {
         <DataContext.Consumer>
           {ctx => (
             <React.Fragment>
-              <TaskRow item={ctx.root} depth={0} />
+              <HTMLTable bordered striped condensed>
+                <thead>
+                  <th>actions</th>
+                  <th>title</th>
+                  <th>id</th>
+                </thead>
+                <tbody>
+                  <TaskRow item={ctx.root} depth={0} />
+                </tbody>
+              </HTMLTable>
             </React.Fragment>
           )}
         </DataContext.Consumer>

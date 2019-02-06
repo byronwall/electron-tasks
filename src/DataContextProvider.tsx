@@ -250,7 +250,7 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
   }
 
   indentTaskRight(id: number) {
-    // find the task, find the task right above it, make this taks a child of that one
+    // find the task, find the task right above it, make this task a child of that one
     const tasks = _.cloneDeep(this.state.root);
 
     const itsParent = this.findParentOfFilter(tasks, c => c.id === id);
@@ -278,7 +278,7 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
   }
 
   indentTaskLeft(id: number) {
-    // find the task, find the task right above it, make this taks a child of that one
+    // find the task, find the task right above it, make this task a child of that one
     const tasks = _.cloneDeep(this.state.root);
 
     const itsParent = this.findParentOfFilter(tasks, c => c.id === id);
