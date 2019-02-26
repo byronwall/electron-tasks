@@ -1,4 +1,4 @@
-import { Button, ButtonGroup } from "@blueprintjs/core";
+import { Button, ButtonGroup, Tag } from "@blueprintjs/core";
 import React from "react";
 
 import { DataContext } from "./DataContextProvider";
@@ -77,13 +77,19 @@ export class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
                         ctx.indentTaskRight(this.props.item.id)
                       }
                       indentLeft={() => ctx.indentTaskLeft(this.props.item.id)}
-                    />
+                    >
+                      {this.props.item.title}
+                      {this.props.item.tags.map((tag, index) => (
+                        <Tag key={tag}>{tag}</Tag>
+                      ))}
+                    </EditOrDisplay>
                   </div>
                 </td>
               </React.Fragment>
             )}
           </DataContext.Consumer>
           <td>{this.props.item.id}</td>
+          <td>{this.props.item.tags.join(",")}</td>
         </tr>
         {this.props.item.children !== undefined &&
           this.props.item.children

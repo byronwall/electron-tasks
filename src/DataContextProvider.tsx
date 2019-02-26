@@ -38,7 +38,7 @@ export const DataContext = React.createContext<DataContext>({
   indentTaskRight: dummy,
   // TODO: add indent left and indent right
   // TODO: add ability to move task up and down
-  root: { title: "Dummy", id: 0, isComplete: false, isNewTask: false }
+  root: { title: "Dummy", id: 0, isComplete: false, isNewTask: false, tags: [] }
 });
 
 export class DataContextProvider extends React.Component<{}, AppDataState> {
@@ -51,17 +51,10 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
     this.state = {
       root: {
         title: "TEst",
-        children: [
-          {
-            title: "Test child",
-            id: DataContextProvider._id++,
-            isComplete: false,
-            isNewTask: false
-          }
-        ],
         id: DataContextProvider._id++,
         isComplete: false,
-        isNewTask: false
+        isNewTask: false,
+        tags: []
       }
     };
 
@@ -82,7 +75,10 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
       tasks.children = [];
     }
 
-    tasks.children.push(this.createNewTask(title));
+    const newTask = this.createNewTask(title);
+    processTaskTitle(newTask);
+
+    tasks.children.push(newTask);
 
     this.setState({ root: tasks });
   }
@@ -92,7 +88,8 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
       title,
       id: DataContextProvider._id++,
       isComplete: false,
-      isNewTask: true
+      isNewTask: true,
+      tags: []
     };
   }
 
@@ -152,7 +149,12 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
       return;
     }
 
+    // process the title and create any tags
     Object.assign(taskToEdit, newProps);
+
+    console.log("task edit", id, taskToEdit, newProps);
+
+    processTaskTitle(taskToEdit);
 
     this.setState({ root: tasks });
   }
@@ -168,6 +170,7 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
     }
 
     Object.assign(taskToEdit, newProps);
+    processTaskTitle(taskToEdit);
 
     // find the parent of that task, add a new task
     const parent = this.findParentOfFilter(tasks, c => c.id === id);
@@ -332,4 +335,23 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
       </DataContext.Provider>
     );
   }
+}
+function processTaskTitle(taskToEdit: Task) {
+  const tagRegex = /#([\w-]+)\b/g;
+  let match = tagRegex.exec(taskToEdit.title);
+  while (match !== null) {
+    const newTag = match[1];
+
+    if (taskToEdit.tags.indexOf(newTag) === -1) {
+      taskToEdit.tags.push(newTag);
+    }
+
+    match = tagRegex.exec(taskToEdit.title);
+  }
+
+  // remove the tags from the desc
+  const newTitle = taskToEdit.title.replace(tagRegex, "");
+  taskToEdit.title = newTitle;
+
+  // TODO: add similar for milestones and status
 }

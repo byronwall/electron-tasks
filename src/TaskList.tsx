@@ -19,6 +19,7 @@ export class TaskList extends React.Component {
                   <th>actions</th>
                   <th>title</th>
                   <th>id</th>
+                  <th>tags</th>
                 </thead>
                 <tbody>
                   <TaskRow item={ctx.root} depth={0} />

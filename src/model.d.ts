@@ -6,4 +6,6 @@ export interface Task {
   isComplete: boolean;
 
   isNewTask: boolean;
+
+  tags: string[];
 }

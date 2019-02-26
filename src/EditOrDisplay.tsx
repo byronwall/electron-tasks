@@ -1,4 +1,5 @@
 import React from "react";
+import { Overlay } from "@blueprintjs/core";
 
 interface EditOrDisplayProps {
   value: string;
@@ -13,6 +14,8 @@ interface EditOrDisplayProps {
 interface EditOrDisplayState {
   isEditing: boolean;
   editValue: string;
+
+  showOverlay: boolean;
 }
 
 export class EditOrDisplay extends React.Component<
@@ -28,7 +31,8 @@ export class EditOrDisplay extends React.Component<
 
     this.state = {
       editValue: props.value,
-      isEditing: false
+      isEditing: false,
+      showOverlay: false
     };
   }
 
@@ -57,6 +61,11 @@ export class EditOrDisplay extends React.Component<
       console.log("alt left indent");
       this.props.indentLeft();
     }
+
+    if (keyDownEvent.key === "#") {
+      console.log("overlay change");
+      this.setState({ showOverlay: true });
+    }
   }
 
   private acceptEdit(didSaveOnEnterKey: boolean) {
@@ -68,6 +77,15 @@ export class EditOrDisplay extends React.Component<
         this.props.didUpdate(this.state.editValue);
       }
     });
+  }
+
+  handleBlur() {
+    // prevent save when showing overlay
+    if (this.state.showOverlay) {
+      return;
+    }
+
+    this.acceptEdit(false);
   }
 
   activateEditor() {
@@ -85,22 +103,28 @@ export class EditOrDisplay extends React.Component<
 
   renderEditor() {
     return (
-      <input
-        type="text"
-        ref={ref => (this.inputRef = ref)}
-        value={this.state.editValue}
-        onChange={handleStringChange(editValue => this.setState({ editValue }))}
-        onKeyDown={keyDownEvent => this.testKeyDown(keyDownEvent)}
-        onBlur={() => this.acceptEdit(false)}
-        style={{
-          width: 300
-        }}
-      />
+      <>
+        <input
+          type="text"
+          ref={ref => (this.inputRef = ref)}
+          value={this.state.editValue}
+          onChange={handleStringChange(editValue =>
+            this.setState({ editValue })
+          )}
+          onKeyDown={keyDownEvent => this.testKeyDown(keyDownEvent)}
+          onBlur={() => this.handleBlur()}
+          style={{
+            width: 300
+          }}
+        />
+      </>
     );
   }
 
   renderDisplay() {
-    return <div onClick={() => this.activateEditor()}>{this.props.value}</div>;
+    return (
+      <div onClick={() => this.activateEditor()}>{this.props.children}</div>
+    );
   }
 
   render() {
