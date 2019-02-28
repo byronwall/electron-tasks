@@ -16,10 +16,12 @@ export class TaskList extends React.Component {
             <React.Fragment>
               <HTMLTable bordered striped condensed>
                 <thead>
-                  <th>actions</th>
-                  <th>title</th>
-                  <th>id</th>
-                  <th>tags</th>
+                  <tr>
+                    <th>actions</th>
+                    <th>title</th>
+                    <th>id</th>
+                    <th>tags</th>
+                  </tr>
                 </thead>
                 <tbody>
                   <TaskRow item={ctx.root} depth={0} />

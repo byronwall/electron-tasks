@@ -15,7 +15,6 @@ export default class App extends React.Component {
               <div>
                 <Nav />
                 <TaskList />
-                <KeyboardModal />
               </div>
 
               <GlobalHotKeys
@@ -26,7 +25,7 @@ export default class App extends React.Component {
                       evt.preventDefault();
                       evt.stopPropagation();
                     }
-                    ctx.addTask("from global");
+                    ctx.addTask("");
                   }
                 }}
               />
@@ -35,11 +34,5 @@ export default class App extends React.Component {
         </DataContext.Consumer>
       </DataContextProvider>
     );
-  }
-}
-
-export class KeyboardModal extends React.Component {
-  render() {
-    return <div>keyboard modal</div>;
   }
 }

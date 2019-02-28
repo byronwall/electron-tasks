@@ -47,44 +47,36 @@ export class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
                     <Button small icon="move" />
                   </ButtonGroup>
                 </td>
-                <td>
-                  <div
-                    style={{
-                      paddingLeft: 10 * this.props.depth
-                    }}
-                  >
-                    <EditOrDisplay
-                      value={this.props.item.title}
-                      didUpdate={newValue =>
-                        ctx.changeTaskProps(this.props.item.id, {
-                          title: newValue,
-                          isNewTask: false
-                        })
-                      }
-                      saveWithEnter={newValue =>
-                        ctx.saveTaskAndCreateNew(this.props.item.id, {
-                          title: newValue,
-                          isNewTask: false
-                        })
-                      }
-                      defaultIsEditing={this.props.item.isNewTask}
-                      cancelUpdate={() =>
-                        ctx.changeTaskProps(this.props.item.id, {
-                          isNewTask: false
-                        })
-                      }
-                      indentRight={() =>
-                        ctx.indentTaskRight(this.props.item.id)
-                      }
-                      indentLeft={() => ctx.indentTaskLeft(this.props.item.id)}
-                    >
-                      {this.props.item.title}
-                      {this.props.item.tags.map((tag, index) => (
-                        <Tag key={tag}>{tag}</Tag>
-                      ))}
-                    </EditOrDisplay>
-                  </div>
-                </td>
+
+                <EditOrDisplay
+                  value={this.props.item.title}
+                  didUpdate={newValue =>
+                    ctx.changeTaskProps(this.props.item.id, {
+                      title: newValue,
+                      isNewTask: false
+                    })
+                  }
+                  saveWithEnter={newValue =>
+                    ctx.saveTaskAndCreateNew(this.props.item.id, {
+                      title: newValue,
+                      isNewTask: false
+                    })
+                  }
+                  defaultIsEditing={this.props.item.isNewTask}
+                  cancelUpdate={() =>
+                    ctx.changeTaskProps(this.props.item.id, {
+                      isNewTask: false
+                    })
+                  }
+                  indentRight={() => ctx.indentTaskRight(this.props.item.id)}
+                  indentLeft={() => ctx.indentTaskLeft(this.props.item.id)}
+                  depth={this.props.depth}
+                >
+                  {this.props.item.title}
+                  {this.props.item.tags.map((tag, index) => (
+                    <Tag key={tag}>{tag}</Tag>
+                  ))}
+                </EditOrDisplay>
               </React.Fragment>
             )}
           </DataContext.Consumer>
@@ -95,7 +87,11 @@ export class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
           this.props.item.children
             .filter(c => !c.isComplete)
             .map(child => (
-              <TaskRow item={child} depth={this.props.depth + 1} />
+              <TaskRow
+                key={child.id}
+                item={child}
+                depth={this.props.depth + 1}
+              />
             ))}
       </>
     );

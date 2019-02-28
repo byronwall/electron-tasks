@@ -1,9 +1,9 @@
 import React from "react";
-import { Overlay } from "@blueprintjs/core";
 
 interface EditOrDisplayProps {
   value: string;
   defaultIsEditing?: boolean;
+  depth: number;
 
   didUpdate(newText: string): void;
   saveWithEnter(newText: string): void;
@@ -14,8 +14,6 @@ interface EditOrDisplayProps {
 interface EditOrDisplayState {
   isEditing: boolean;
   editValue: string;
-
-  showOverlay: boolean;
 }
 
 export class EditOrDisplay extends React.Component<
@@ -31,8 +29,7 @@ export class EditOrDisplay extends React.Component<
 
     this.state = {
       editValue: props.value,
-      isEditing: false,
-      showOverlay: false
+      isEditing: false
     };
   }
 
@@ -61,11 +58,6 @@ export class EditOrDisplay extends React.Component<
       console.log("alt left indent");
       this.props.indentLeft();
     }
-
-    if (keyDownEvent.key === "#") {
-      console.log("overlay change");
-      this.setState({ showOverlay: true });
-    }
   }
 
   private acceptEdit(didSaveOnEnterKey: boolean) {
@@ -81,14 +73,14 @@ export class EditOrDisplay extends React.Component<
 
   handleBlur() {
     // prevent save when showing overlay
-    if (this.state.showOverlay) {
-      return;
-    }
 
     this.acceptEdit(false);
   }
 
   activateEditor() {
+    if (this.state.isEditing) {
+      return;
+    }
     this.setState({ isEditing: true }, () => {
       this.focusEditor();
     });
@@ -122,15 +114,26 @@ export class EditOrDisplay extends React.Component<
   }
 
   renderDisplay() {
-    return (
-      <div onClick={() => this.activateEditor()}>{this.props.children}</div>
-    );
+    return <div>{this.props.children}</div>;
   }
 
   render() {
-    return this.state.isEditing || this.props.defaultIsEditing
-      ? this.renderEditor()
-      : this.renderDisplay();
+    const content =
+      this.state.isEditing || this.props.defaultIsEditing
+        ? this.renderEditor()
+        : this.renderDisplay();
+
+    return (
+      <td onClick={() => this.activateEditor()}>
+        <div
+          style={{
+            paddingLeft: 10 * this.props.depth
+          }}
+        >
+          {content}
+        </div>
+      </td>
+    );
   }
 
   componentDidMount() {

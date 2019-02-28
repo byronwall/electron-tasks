@@ -152,6 +152,13 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
     // process the title and create any tags
     Object.assign(taskToEdit, newProps);
 
+    if (taskToEdit.title === "") {
+      console.log("should delete this task instead");
+
+      this.removeTask(id);
+      return;
+    }
+
     console.log("task edit", id, taskToEdit, newProps);
 
     processTaskTitle(taskToEdit);
@@ -170,6 +177,12 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
     }
 
     Object.assign(taskToEdit, newProps);
+
+    if (taskToEdit.title === "") {
+      this.removeTask(id);
+      return;
+    }
+
     processTaskTitle(taskToEdit);
 
     // find the parent of that task, add a new task
@@ -178,7 +191,7 @@ export class DataContextProvider extends React.Component<{}, AppDataState> {
     console.log("found parent", parent);
 
     if (parent !== undefined) {
-      parent.children!.push(this.createNewTask("child?"));
+      parent.children!.push(this.createNewTask(""));
     }
 
     this.setState({ root: tasks });
